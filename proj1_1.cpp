@@ -4,47 +4,54 @@
  */
 
 #include <iostream>
-#include <algorithm>
+#include <sstream>
 #include <vector>
 #include <string>
+#include <fstream>
 
-void reverseWords(std::string str)
+std::string reverseWords(const std::string& line)
 {
-	std::vector<std::string> words;
-	std::string::size_type pos = 1;
+	std::istringstream buffer(line);
+	std::string word, revStr;
+	std::vector<std::string> hold;
+	int wordCount = 0;
 
-	while (pos != std::string::npos)
+	while (buffer >> word)
 	{
-		pos = str.find(" ");
-		if (pos != std::string::npos)
-		{
-			words.push_back(std::string(str.begin(), str.begin() + pos));
-			str.erase(str.begin(), str.begin() + pos + 1);
-		}
-		else
-		{
-			words.push_back(std::string(str.begin(), str.end()));
-			str.erase(str.begin(), str.end());
-		}
+		hold.push_back(word);
+		wordCount++;
 	}
-	reverse(words.begin(), words.end());
-
-	for (int i = 0; i < words.size(); i++)
+	for (int i = wordCount - 1; i >= 0; i--)
 	{
-		str.append(words[i].append(" "));
+		revStr += hold[i];
+		revStr += " ";
 	}
-	std::cout << str << std::endl;
+	return revStr;
 }
 
 int main()
 {
-	std::string str1 = "this is a test";
-	std::string str2 = "foobar";
-	std::string str3 = "all your base";
+	std::ifstream infile("input.in");
+	std::ofstream oufile("output.out");
+	if (!infile)
+	{
+		std::cout << "Could not open input file" << std::endl;
+	}
+	if (!oufile)
+	{
+		std::cout << "Could ont open output file" << std::endl;
+	}
+	std::string line;
+	int test_cases;
+	infile >> test_cases;    
+	getline(infile, line); 
 
-	reverseWords(str1);
-	reverseWords(str2);
-	reverseWords(str3);
-
+	for (int x = 1; std::getline(infile, line); x++)
+	{
+		std::string all = reverseWords(line);
+		oufile << "Case #" << x << ": " << all << std::endl;
+	}
+	infile.close();
+	oufile.close();
 	std::cin.get();
 }
